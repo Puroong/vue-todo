@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">
+  <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+
+  <title>Todo</title>
+</head>
+<body>
+  <div id="todo-app" class="ui container">
+    <div id="todos" class="ui stacked segments">
+      <div class="ui segment sixteen wide column">
+        <div id="todo-input" class="ui input">
+          <input type="text" placeholder="todo" v-model="input" v-on:keyup.enter="addTodo">
+        </div>
+        <!--if completed is more than 1-->
+      </div>
+
+      <div id="todo" class="ui segment" v-for="todo in todos" v-if="filter(todo)">
+        <div class="ui checkbox">
+          <div v-if="todo.status === 'Active'">
+            <input type="checkbox" v-on:click="changeTodoStatus(todo)">
+            <label>{{todo.text}}</label>
+          </div>
+          <div v-if="todo.status === 'Completed'">
+            <input checked type="checkbox" v-on:click="changeTodoStatus(todo)">
+            <label><strike>{{todo.text}}</strike></label>
+          </div>
+        </div>
+      </div>
+
+      <div id="footer" class="ui segment" v-if="todos.length > 0">
+        <i v-if="activeTodos() === 1">
+          1 item left
+        </i>
+        <i v-else>
+          {{activeTodos()}} items left
+        </i>
+
+        <button v-on:click="setFilter('All')">All</button>
+        <button v-on:click="setFilter('Active')">Active</button>
+        <button v-on:click="setFilter('Completed')">Completed</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    var vm = new Vue({
+      el: '#todo-app',
+      data: {
+        input: '',
+        todos: [],
+        filterBy: 'All',
+        todoCompleted: false
+      },
+      methods: {
+        activeTodos: function(){
+          var cnt = 0;
+            for(var i=0, todo; todo = this.todos[i];i++){
+            if(todo.status === 'Active')
+              cnt++
+          }
+          return cnt
+        },
+        clearInput: function(){
+          this.input = ''
+        },
+        addTodo: function(){
+          this.todos.push({"text": this.input, "status": 'Active'})
+          this.clearInput()
+        },
+        filter: function(todo){
+          if(this.filterBy === "All")
+            return true
+          else
+            return todo.status === this.filterBy
+        },
+        setFilter: function(by){
+          this.filterBy = by
+        },
+        changeTodoStatus: function(todo){
+          if(todo.status === 'Active')
+            todo.status = 'Completed'
+          else if(todo.status === 'Completed')
+            todo.status = 'Active'
+        },
+        todoActivated: function(todo){
+          todo.status = 'Active'
+        },
+        todoCompleted: function(todo){
+          todo.status = 'Completed'
+        }
+      }
+    })
+  </script>
+</body>
+</html>
