@@ -36,11 +36,11 @@
       </div>
 
       <div id="footer" class="ui segment" v-if="todos.length > 0">
-        <i v-if="activeTodos() === 1">
+        <i v-if="activeTodos === 1">
           1 item left
         </i>
         <i v-else>
-          {{activeTodos()}} items left
+          {{activeTodos}} items left
         </i>
 
         <button v-on:click="setFilter('All')">All</button>
@@ -58,8 +58,13 @@
         filterBy: 'All',
         todoCompleted: false
       },
-      methods: {
+      computed: {
         activeTodos: function(){
+          return this.getActiveTodos();
+        }
+      },
+      methods: {
+        getActiveTodos: function(){
           var cnt = 0;
             for(var i=0, todo; todo = this.todos[i];i++){
             if(todo.status === 'Active')
