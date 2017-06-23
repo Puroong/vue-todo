@@ -12,7 +12,7 @@
 
   <style>
     #todo-input{
-      width: 100%;
+      width: 95%;
     }
     .completed{
       text-decoration: line-through;
@@ -34,6 +34,10 @@
   <div id="todo-app" class="ui container">
     <div id="todos" class="ui stacked segments">
       <div class="ui segment sixteen wide column">
+        <div class="ui checkbox" v-if="todos.length>0">
+          <input type="checkbox" v-on:click="changeAllTodos">
+          <label for=""></label>
+        </div>
         <div id="todo-input" class="ui input">
           <input type="text" placeholder="todo" v-model="input" v-on:keyup.enter="addTodo">
         </div>
@@ -131,6 +135,15 @@
               this.todos.splice(i,1)
               i--
             }
+          }
+        },
+        changeAllTodos: function(){
+          let allTodoSelected = (this.cntCompletedTodo == this.todos.length)
+          let nextStatus = (allTodoSelected)?true:false
+
+          for(let i=0;i<this.todos.length;i++){
+            this.todos[i].isActive = nextStatus;
+            console.log(this.todos[i].isActive)
           }
         }
       }
