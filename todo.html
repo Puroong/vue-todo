@@ -10,6 +10,16 @@
   <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>
   <script src="https://unpkg.com/vue"></script>
 
+  <style>
+    .completed{
+      text-decoration: line-through;
+      color: gray;
+    }
+    .active{
+      color: black;
+    }
+  </style>
+
   <title>Todo</title>
 </head>
 <body>
@@ -24,13 +34,9 @@
 
       <div id="todo" class="ui segment" v-for="todo in todos" v-if="filter(todo)">
         <div class="ui checkbox">
-          <div v-if="todo.status === 'Active'">
-            <input type="checkbox" v-on:click="changeTodoStatus(todo)">
+          <div v-bind:class="todo.isActive?'active':'completed'">
+            <input type="checkbox" v-on:click="changeTodoStatus(todo)"  v-bind:checked="todo.isActive?'':'checked'"><!--checked가 어떻게 작동하는지 이해 안 감-->
             <label>{{todo.text}}</label>
-          </div>
-          <div v-if="todo.status === 'Completed'">
-            <input checked type="checkbox" v-on:click="changeTodoStatus(todo)">
-            <label><strike>{{todo.text}}</strike></label>
           </div>
         </div>
       </div>
@@ -56,7 +62,6 @@
         input: '',
         todos: [],
         filterBy: 'All',
-        todoCompleted: false
       },
       computed: {
         activeTodos: function(){
@@ -76,7 +81,7 @@
           this.input = ''
         },
         addTodo: function(){
-          this.todos.push({"text": this.input, "status": 'Active'})
+          this.todos.push({"text": this.input, "status": 'Active', "isActive": true})
           this.clearInput()
         },
         filter: function(todo){
@@ -89,16 +94,21 @@
           this.filterBy = by
         },
         changeTodoStatus: function(todo){
-          if(todo.status === 'Active')
-            todo.status = 'Completed'
+          if(todo.status === 'Active'){
+            console.log('todoCompleted before: '+todo.isActive);
+            this.todoCompleted(todo);
+            console.log('todoCompleted after: '+todo.isActive);
+          }
           else if(todo.status === 'Completed')
-            todo.status = 'Active'
+            this.todoActivated(todo);
         },
         todoActivated: function(todo){
           todo.status = 'Active'
+          todo.isActive = true;
         },
         todoCompleted: function(todo){
           todo.status = 'Completed'
+          todo.isActive = false;
         }
       }
     })
