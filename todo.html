@@ -51,17 +51,17 @@
       </div>
 
       <div id="footer" class="ui segment" v-if="todos.length > 0">
-        <i v-if="activeTodos === 1">
+        <i v-if="cntActiveTodo === 1">
           1 item left
         </i>
         <i v-else>
-          {{activeTodos}} items left
+          {{cntActiveTodo}} items left
         </i>
 
         <button v-on:click="setFilter('All')">All</button>
         <button v-on:click="setFilter('Active')">Active</button>
         <button v-on:click="setFilter('Completed')">Completed</button>
-        <button v-if="completedTodos>0" v-on:click="removeCompleted">Remove Completed</button>
+        <button v-if="cntCompletedTodo>0" v-on:click="removeCompletedTodos">Remove Completed</button>
       </div>
     </div>
   </div>
@@ -74,11 +74,11 @@
         filterBy: 'All',
       },
       computed: {
-        activeTodos: function(){
+        cntActiveTodo: function(){
           return this.getActiveTodos()
         },
-        completedTodos: function(){
-          return this.todos.length-this.activeTodos
+        cntCompletedTodo: function(){
+          return this.todos.length-this.cntActiveTodo
         }
       },
       methods: {
@@ -110,25 +110,26 @@
         },
         changeTodoStatus: function(todo){
           if(todo.isActive){
-            this.todoCompleted(todo);
+            this.completeTodo(todo);
           }
           else
-            this.todoActivated(todo);
+            this.activateTodo(todo);
         },
-        todoActivated: function(todo){
+        activateTodo: function(todo){
           todo.isActive = true;
         },
-        todoCompleted: function(todo){
+        completeTodo: function(todo){
           todo.isActive = false;
         },
         removeTodo: function(todo){
           let index = this.todos.indexOf(todo);
           this.todos.splice(index, 1);
         },
-        removeCompleted: function(){
+        removeCompletedTodos: function(){
           for(let i=0;i<this.todos.length;i++){
             if(!this.todos[i].isActive){
               this.todos.splice(i,1)
+              i--
             }
           }
         }
