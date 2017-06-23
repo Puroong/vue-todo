@@ -11,12 +11,20 @@
   <script src="https://unpkg.com/vue"></script>
 
   <style>
+    #todo-input{
+      width: 100%;
+    }
     .completed{
       text-decoration: line-through;
       color: gray;
     }
     .active{
       color: black;
+    }
+    .btn-remove{
+      float: right;
+      color: black;
+      cursor: pointer;
     }
   </style>
 
@@ -39,6 +47,7 @@
             <label>{{todo.text}}</label>
           </div>
         </div>
+        <div class="btn-remove" v-on:click="removeTodo(todo)">&#10006;</div>
       </div>
 
       <div id="footer" class="ui segment" v-if="todos.length > 0">
@@ -52,6 +61,7 @@
         <button v-on:click="setFilter('All')">All</button>
         <button v-on:click="setFilter('Active')">Active</button>
         <button v-on:click="setFilter('Completed')">Completed</button>
+        <button v-if="completedTodos>0" v-on:click="removeCompleted">Remove Completed</button>
       </div>
     </div>
   </div>
@@ -65,14 +75,17 @@
       },
       computed: {
         activeTodos: function(){
-          return this.getActiveTodos();
+          return this.getActiveTodos()
+        },
+        completedTodos: function(){
+          return this.todos.length-this.activeTodos
         }
       },
       methods: {
         getActiveTodos: function(){
           var cnt = 0;
             for(var i=0, todo; todo = this.todos[i];i++){
-            if(todo.status === 'Active')
+            if(todo.isActive)
               cnt++
           }
           return cnt
@@ -81,34 +94,43 @@
           this.input = ''
         },
         addTodo: function(){
-          this.todos.push({"text": this.input, "status": 'Active', "isActive": true})
+          this.todos.push({"text": this.input, "isActive": true})
           this.clearInput()
         },
         filter: function(todo){
           if(this.filterBy === "All")
             return true
-          else
-            return todo.status === this.filterBy
+          else if(this.filterBy === "Active")
+            return todo.isActive
+          else if(this.filterBy === "Completed")
+            return !todo.isActive
         },
         setFilter: function(by){
           this.filterBy = by
         },
         changeTodoStatus: function(todo){
-          if(todo.status === 'Active'){
-            console.log('todoCompleted before: '+todo.isActive);
+          if(todo.isActive){
             this.todoCompleted(todo);
-            console.log('todoCompleted after: '+todo.isActive);
           }
-          else if(todo.status === 'Completed')
+          else
             this.todoActivated(todo);
         },
         todoActivated: function(todo){
-          todo.status = 'Active'
           todo.isActive = true;
         },
         todoCompleted: function(todo){
-          todo.status = 'Completed'
           todo.isActive = false;
+        },
+        removeTodo: function(todo){
+          let index = this.todos.indexOf(todo);
+          this.todos.splice(index, 1);
+        },
+        removeCompleted: function(){
+          for(let i=0;i<this.todos.length;i++){
+            if(!this.todos[i].isActive){
+              this.todos.splice(i,1)
+            }
+          }
         }
       }
     })
