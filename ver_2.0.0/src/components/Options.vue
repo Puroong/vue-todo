@@ -1,34 +1,43 @@
 <template>
-  <div id="options" class="ui segment">
-    <i v-if="cntActiveTodo === 1">
+  <div id="options" v-if="allTodos.length>0" class="ui segment">
+    <i v-if="activeTodos.length === 1">
       1 item left
     </i>
     <i v-else>
-      {{cntActiveTodo}} items left
+      {{activeTodos.length}} items left
     </i>
 
-    <button v-on:click="setFilter('All')">All</button>
-    <button v-on:click="setFilter('Active')">Active</button>
-    <button v-on:click="setFilter('Completed')">Completed</button>
-    <button v-if="cntCompletedTodo>0" v-on:click="removeCompletedTodos">Remove Completed</button>
+    <button v-on:click="SET_FILTER('All')">All</button>
+    <button v-on:click="SET_FILTER('Active')">Active</button>
+    <button v-on:click="SET_FILTER('Completed')">Completed</button>
+    <button v-if="completedTodos.length>0" v-on:click="REMOVE_COMPLETED_TODOS">Remove Completed</button>
   </div>
 </template>
 <script>
+
   export default {
-    props: {
-      cntActiveTodo: {
-        type: Number
+    computed: {
+      allTodos () {
+        return this.$store.getters.allTodos
       },
-      cntCompletedTodo: {
-        type: Number
-      }
+      activeTodos () {
+        return this.$store.getters.activeTodos
+      },
+      completedTodos () {
+        return this.$store.getters.completedTodos
+      },
     },
     methods: {
-      setFilter: function(by){
-        this.$emit('setFilter', by);
+      REMOVE_COMPLETED_TODOS: function () {
+        for(var i=0;i<this.allTodos.length;i++){
+          if(this.allTodos[i].active === false){
+            this.$store.commit('REMOVE_TODO', this.allTodos[i])
+            i--
+         }
+        }
       },
-      removeCompletedTodos: function () {
-        this.$emit('removeCompletedTodos');
+      SET_FILTER(by) {
+        this.$store.commit('SET_FILTER', by)
       }
     }
   }
